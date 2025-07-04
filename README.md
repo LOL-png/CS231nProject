@@ -129,14 +129,6 @@ python main.py --stage 1 --batch_size 32 --num_epochs 20
 3. **GPU-Optimized Training**: Complete dataset cached in GPU memory
 4. **Comprehensive Loss Design**: Physics-aware losses with dynamic weighting
 
-## Documentation
-
-Each component has detailed documentation:
-- `Advanced_Manipulation_Transformer/README.md`: Full model details
-- `Advanced_Manipulation_Transformer/ARCHITECTURE.md`: Architecture deep dive
-- `Video_Manipulation_Transformer/README.md`: Initial model documentation
-- `bugfix-logs/`: Detailed fix documentation
-
 ## Authors
 
 Howard Ji and Bryan Dong
