@@ -1,0 +1,144 @@
+# Default configuration for Advanced Manipulation Transformer
+
+# Experiment settings
+experiment_name: "advanced_manipulation_transformer"
+output_dir: "outputs/${experiment_name}"
+wandb_project: "231nProject_AMT"
+
+# Data settings
+data:
+  root_dir: "../dex-ycb-toolkit"  # Adjust path as needed
+  dexycb_root: "../dex-ycb-toolkit"  # Path to DexYCB dataset
+  train_split: "s0_train"  # DexYCB split
+  val_split: "s0_val"
+  sequence_length: 1  # Set to >1 for temporal modeling
+  num_workers: 8
+  prefetch_factor: 4
+  persistent_workers: true
+  
+  # Augmentation settings
+  augmentation:
+    rotation_range: 15.0  # degrees
+    scale_range: [0.8, 1.2]
+    translation_std: 0.05
+    color_jitter: 0.2
+    joint_noise_std: 0.005  # 5mm
+
+# Model architecture
+model:
+  # DINOv2 settings
+  freeze_layers: 12  # Freeze first 12 layers of DINOv2
+  
+  # Hidden dimensions
+  hidden_dim: 1024
+  contact_hidden_dim: 512
+  
+  # Model components
+  use_mano_vertices: true
+  use_sigma_reparam: true
+  use_attention_fusion: true
+  
+  # Refinement settings
+  num_refinement_steps: 2
+  
+  # Object and contact settings
+  max_objects: 10
+  num_object_classes: 100
+  num_contact_points: 10
+  
+  # Regularization
+  dropout: 0.1
+
+# Training settings
+training:
+  batch_size: 32  # Main batch size setting
+  num_epochs: 20
+  learning_rate: 1e-3
+  weight_decay: 0.01
+  
+  # Mixed precision
+  use_amp: true
+  use_bf16: true  # Use BF16 for H200
+  mixed_precision: true
+  
+  # Optimization
+  accumulation_steps: 2
+  grad_clip: 1.0
+  ema_decay: 0.999
+  use_ema: true
+  
+  # Multi-rate learning
+  multi_rate:
+    pretrained: 0.01  # 1% of base LR for pretrained
+    new_encoders: 0.5  # 50% of base LR for new encoders
+    decoders: 1.0     # Full LR for decoders
+  
+  # Scheduler
+  scheduler: "cosine"  # "cosine", "onecycle", or "step"
+  T_0: 10  # For cosine annealing
+  T_mult: 2
+  min_lr: 1e-6
+  
+  # Logging
+  log_freq: 100
+  val_freq: 1000
+  save_freq: 10
+  use_wandb: true
+  
+  # Loss settings moved to separate section
+
+# Loss settings
+loss:
+  # Loss weights
+  loss_weights:
+    hand_coarse: 1.0
+    hand_refined: 1.2
+    object_position: 1.0
+    object_rotation: 0.5
+    contact: 0.3
+    physics: 0.1
+    diversity: 0.01
+    reprojection: 0.5
+    kl: 0.001  # For sigma reparameterization
+  
+  # Loss-specific settings
+  diversity_margin: 0.01
+  object_position_weight: 1.0
+  per_joint_weighting: true
+  fingertip_weight: 1.5
+
+# Evaluation settings
+evaluation:
+  metrics: ["mpjpe", "pa_mpjpe", "pck_2d", "pck_3d"]
+  pck_thresholds: [20, 30, 40, 50]  # mm for 3D PCK
+  save_visualizations: true
+
+# Optimization settings
+optimizations:
+  # H200 GPU optimizations
+  use_flash_attention: true
+  use_fp8: false  # Enable for H200 GPUs
+  use_memory_optimization: true
+  use_mode_collapse_prevention: true
+  
+  # Distributed training
+  use_fsdp: false  # Use FSDP for very large models
+  
+  memory:
+    gradient_checkpointing: true
+    checkpoint_ratio: 0.5
+    dynamic_batch_sizing: true
+    target_memory_usage: 0.9  # Use 90% of GPU memory
+  
+# Debugging settings
+debug:
+  enabled: false
+  debug_initial_model: true
+  debug_final_model: true
+  save_attention_maps: false
+  log_gradient_norms: true
+
+# Checkpoint settings
+checkpoint:
+  resume_from: null
+  checkpoint_dir: "${output_dir}/checkpoints"

@@ -1,0 +1,72 @@
+wandb_version: 1
+
+aug_color_jitter:
+  value: 0.2976220594008917
+aug_joint_noise_std:
+  value: 0.002079566611710564
+aug_rotation_range:
+  value: 29.448553645656457
+aug_scale_max:
+  value: 1.262936369618741
+aug_scale_min:
+  value: 0.7638233978001037
+aug_translation_std:
+  value: 0.05759833283578071
+batch_size:
+  value: 64
+checkpoint_ratio:
+  value: 0.5955381974965015
+contact_hidden_dim:
+  value: 768
+dropout:
+  value: 0.3
+ema_decay:
+  value: 0.9986037734515992
+freeze_layers:
+  value: 8
+grad_clip:
+  value: 1.88580114923764
+gradient_checkpointing:
+  value: false
+hidden_dim:
+  value: 512
+learning_rate:
+  value: 0.001162645150405121
+loss_weight_contact:
+  value: 0.23920775930778532
+loss_weight_diversity:
+  value: 0.07860391090495558
+loss_weight_hand_coarse:
+  value: 0.9740040838252282
+loss_weight_hand_refined:
+  value: 2.4544029617448246
+loss_weight_kl:
+  value: 0.000595217043700853
+loss_weight_object_position:
+  value: 1.3141456133505254
+loss_weight_object_rotation:
+  value: 0.9051706807096298
+loss_weight_physics:
+  value: 0.18634161023654877
+loss_weight_reprojection:
+  value: 0.3786359275720408
+lr_mult_new_encoders:
+  value: 0.5808130488929237
+lr_mult_pretrained:
+  value: 0.001287229852617763
+num_refinement_steps:
+  value: 1
+scheduler_T_0:
+  value: 20
+scheduler_min_lr:
+  value: 1.129233112260763e-06
+use_amp:
+  value: true
+use_attention_fusion:
+  value: true
+use_bf16:
+  value: true
+use_sigma_reparam:
+  value: false
+weight_decay:
+  value: 0.022886192043159673

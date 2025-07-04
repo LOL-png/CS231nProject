@@ -1,0 +1,20 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[submodule]
+	active = .
+[remote "origin"]
+	url = git@github.com:NVlabs/dex-ycb-toolkit.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+	vscode-merge-base = origin/master
+[submodule "bop_toolkit"]
+	url = git@github.com:ywchao/bop_toolkit.git
+[submodule "freihand"]
+	url = git@github.com:ywchao/freihand.git
+[submodule "manopth"]
+	url = git@github.com:hassony2/manopth.git

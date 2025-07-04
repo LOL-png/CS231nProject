@@ -1,0 +1,35 @@
+# Core dependencies with specific versions for compatibility
+torch==2.5.0
+torchvision==0.20.0
+transformers==4.36.0  # For DINOv2
+einops==0.7.0         # For tensor operations
+timm==0.9.12          # For vision models
+scipy>=1.11.0         # For interpolation utilities (>= for Python 3.12)
+wandb>=0.17.2         # For experiment tracking
+numpy>=1.26.0         # NumPy 1.26+ required for Python 3.12
+opencv-python>=4.8.0
+matplotlib>=3.7.0
+tqdm>=4.65.0
+h5py>=3.8.0           # For efficient data storage
+Pillow>=10.0.0        # Image processing
+scikit-learn>=1.3.0   # For evaluation metrics
+seaborn>=0.12.0       # For visualization
+
+# Configuration and utilities
+hydra-core>=1.3.0     # For configuration management
+omegaconf>=2.3.0      # Configuration management
+tensorboard>=2.14.0   # Alternative to wandb
+ipywidgets>=8.0.0     # For jupyter notebook
+
+# Optional: For accelerated training (install separately if needed)
+flash-attn           # Build from source: https://github.com/Dao-AILab/flash-attention.git
+transformer-engine   # For FP8 support: git+https://github.com/NVIDIA/TransformerEngine.git@stable
+xformers==0.0.28.post2         # Memory efficient attention: pip install xformers
+
+# DexYCB toolkit dependencies (already installed)
+# Refer to dex-ycb-toolkit/requirements_updated.txt
+
+# ManoLayer dependencies
+pytorch3d            # For 3D operations (if needed)
+trimesh              # For mesh operations
+pyrender             # For rendering (optional)

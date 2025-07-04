@@ -1,0 +1,103 @@
+experiment_name: advanced_manipulation_transformer
+output_dir: outputs/${experiment_name}
+wandb_project: 231nProject_AMT
+data:
+  root_dir: ../dex-ycb-toolkit
+  dexycb_root: ../dex-ycb-toolkit
+  train_split: s0_train
+  val_split: s0_val
+  sequence_length: 1
+  num_workers: 8
+  prefetch_factor: 4
+  persistent_workers: true
+  augmentation:
+    rotation_range: 15.0
+    scale_range:
+    - 0.8
+    - 1.2
+    translation_std: 0.05
+    color_jitter: 0.2
+    joint_noise_std: 0.005
+model:
+  freeze_layers: 12
+  hidden_dim: 1024
+  contact_hidden_dim: 512
+  use_mano_vertices: true
+  use_sigma_reparam: true
+  use_attention_fusion: true
+  num_refinement_steps: 2
+  max_objects: 10
+  num_object_classes: 100
+  num_contact_points: 10
+  dropout: 0.1
+training:
+  batch_size: 32
+  num_epochs: 100
+  learning_rate: 0.001
+  weight_decay: 0.01
+  use_amp: true
+  use_bf16: true
+  mixed_precision: true
+  accumulation_steps: 2
+  grad_clip: 1.0
+  ema_decay: 0.999
+  use_ema: true
+  multi_rate:
+    pretrained: 0.01
+    new_encoders: 0.5
+    decoders: 1.0
+  scheduler: cosine
+  T_0: 10
+  T_mult: 2
+  min_lr: 1.0e-06
+  log_freq: 100
+  val_freq: 1000
+  save_freq: 10
+  use_wandb: true
+loss:
+  loss_weights:
+    hand_coarse: 1.0
+    hand_refined: 1.2
+    object_position: 1.0
+    object_rotation: 0.5
+    contact: 0.3
+    physics: 0.1
+    diversity: 0.01
+    reprojection: 0.5
+    kl: 0.001
+  diversity_margin: 0.01
+  object_position_weight: 1.0
+  per_joint_weighting: true
+  fingertip_weight: 1.5
+evaluation:
+  metrics:
+  - mpjpe
+  - pa_mpjpe
+  - pck_2d
+  - pck_3d
+  pck_thresholds:
+  - 20
+  - 30
+  - 40
+  - 50
+  save_visualizations: true
+optimizations:
+  use_flash_attention: true
+  use_fp8: false
+  use_memory_optimization: true
+  use_mode_collapse_prevention: true
+  use_fsdp: false
+  memory:
+    gradient_checkpointing: true
+    checkpoint_ratio: 0.5
+    dynamic_batch_sizing: true
+    target_memory_usage: 0.9
+debug:
+  enabled: false
+  debug_initial_model: true
+  debug_final_model: true
+  save_attention_maps: false
+  log_gradient_norms: true
+checkpoint:
+  resume_from: null
+  checkpoint_dir: ${output_dir}/checkpoints

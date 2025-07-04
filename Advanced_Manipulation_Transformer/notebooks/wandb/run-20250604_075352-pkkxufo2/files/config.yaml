@@ -1,0 +1,69 @@
+_wandb:
+    value:
+        cli_version: 0.19.11
+        m: []
+        python_version: 3.12.9
+        t:
+            "1":
+                - 1
+                - 11
+                - 49
+                - 55
+            "2":
+                - 1
+                - 11
+                - 49
+                - 55
+            "3":
+                - 2
+                - 14
+                - 23
+                - 55
+            "4": 3.12.9
+            "5": 0.19.11
+            "6": 4.36.0
+            "8":
+                - 1
+                - 5
+            "12": 0.19.11
+            "13": linux-x86_64
+aug_color_jitter:
+    value: 0.28177524355076256
+aug_joint_noise_std:
+    value: 0.00652745556743669
+aug_rotation_range:
+    value: 12.410395685412851
+aug_scale_max:
+    value: 1.156470208694709
+aug_scale_min:
+    value: 0.709790553743271
+aug_translation_std:
+    value: 0.028781306193796024
+batch_size:
+    value: 64
+diversity_margin:
+    value: 0.013180870015555578
+dropout:
+    value: 0.15
+fingertip_weight:
+    value: 1.6701652207347202
+loss_weight_contact:
+    value: 0.4722260154539179
+loss_weight_diversity:
+    value: 0.013001320010747865
+loss_weight_hand_coarse:
+    value: 1.1355465423334796
+loss_weight_hand_refined:
+    value: 1.1694884622918655
+loss_weight_object_position:
+    value: 0.9788077527627044
+loss_weight_object_rotation:
+    value: 0.39420636372704654
+loss_weight_physics:
+    value: 0.05881395285980773
+loss_weight_reprojection:
+    value: 0.35310095356405363
+per_joint_weighting:
+    value: false
+scheduler_type:
+    value: step

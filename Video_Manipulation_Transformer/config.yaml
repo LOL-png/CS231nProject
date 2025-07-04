@@ -1,0 +1,58 @@
+action_decoder:
+  dropout: 0.1
+  hidden_dim: 512
+  num_action_steps: 10
+  num_grasp_types: 10
+  num_heads: 8
+  num_layers: 4
+batch_size: 32
+checkpoint_dir: checkpoints
+contact_encoder:
+  dropout: 0.1
+  hidden_dim: 256
+  mlp_dim: 1024
+  num_contact_points: 10
+  num_heads: 8
+  num_layers: 4
+dropout: 0.1
+encoder_weight: 0.1
+frame_stride: 1
+grad_clip: 1.0
+hand_encoder:
+  dropout: 0.1
+  hidden_dim: 512
+  mlp_dim: 2048
+  num_heads: 8
+  num_layers: 6
+image_size:
+- 224
+- 224
+max_seq_length: 16
+mujoco_model_path: null
+num_workers: 8
+object_encoder:
+  dropout: 0.1
+  hidden_dim: 512
+  max_objects: 10
+  mlp_dim: 2048
+  num_heads: 8
+  num_layers: 6
+patch_size: 16
+physics_weight: 0.1
+sequence_length: 16
+stage1_epochs: 20
+stage1_lr: 0.0001
+stage2_epochs: 15
+stage2_lr: 5.0e-05
+stage3_epochs: 15
+stage3_lr: 1.0e-05
+temporal_fusion:
+  dropout: 0.1
+  hidden_dim: 1024
+  mlp_dim: 4096
+  num_heads: 16
+  num_layers: 8
+  window_size: 8
+ur_model: ur5
+use_wandb: true
+weight_decay: 0.01

@@ -1,0 +1,381 @@
+import json
+
+# Create notebook structure for transition merger
+notebook = {
+    "cells": [
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "# Video Transition Merger using HOISDF Outputs\n",
+                "\n",
+                "This notebook demonstrates how to merge transitions between two video sequences using:\n",
+                "- HOISDF outputs (MANO parameters, SDFs, contact points)\n",
+                "- Transformer for learning transition patterns\n",
+                "- Diffusion model for smooth, contact-aware transitions"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "import torch\n",
+                "import numpy as np\n",
+                "import matplotlib.pyplot as plt\n",
+                "from transition_merger_model import *\n",
+                "\n",
+                "# Set device\n",
+                "device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')\n",
+                "print(f'Using device: {device}')"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "## 1. Model Configuration"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "# Model configuration\n",
+                "config = {\n",
+                "    'tokenizer': {\n",
+                "        'mano_dim': 51,  # 3 trans + 45 pose + 3 shape\n",
+                "        'sdf_resolution': 64,\n",
+                "        'hidden_dim': 256,\n",
+                "        'num_tokens': 256\n",
+                "    },\n",
+                "    'transformer': {\n",
+                "        'input_dim': 256,\n",
+                "        'hidden_dim': 512,\n",
+                "        'num_heads': 8,\n",
+                "        'num_layers': 6,\n",
+                "        'mano_dim': 51,\n",
+                "        'chunk_size': 50,\n",
+                "        'dropout': 0.1\n",
+                "    },\n",
+                "    'diffuser': {\n",
+                "        'mano_dim': 51,\n",
+                "        'hidden_dim': 256,\n",
+                "        'condition_dim': 512,\n",
+                "        'num_timesteps': 100\n",
+                "    }\n",
+                "}\n",
+                "\n",
+                "# Loss weights\n",
+                "loss_weights = {\n",
+                "    'mano_recon': 1.0,      # MANO parameter reconstruction\n",
+                "    'contact': 0.5,         # Contact consistency\n",
+                "    'smooth': 0.1,          # Movement smoothness\n",
+                "    'boundary': 0.5,        # Task boundary detection\n",
+                "    'contrastive': 0.2,     # Task embedding consistency\n",
+                "    'diffusion': 0.5        # Diffusion model training\n",
+                "}\n",
+                "\n",
+                "# Initialize model\n",
+                "model = TransitionMergerModel(config).to(device)\n",
+                "criterion = TransitionLoss(loss_weights)\n",
+                "optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4)\n",
+                "\n",
+                "print(f\"Model initialized with {sum(p.numel() for p in model.parameters())} parameters\")"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "## 2. Understanding HOISDF Outputs\n",
+                "\n",
+                "The model takes HOISDF outputs from two videos and learns to merge them smoothly."
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "# Example: Create HOISDF outputs structure\n",
+                "def create_example_hoisdf_outputs(num_frames, device):\n",
+                "    \"\"\"Create example HOISDF outputs for demonstration\"\"\"\n",
+                "    return HOISDFOutputs(\n",
+                "        # MANO parameters: 3 translation + 45 pose + 3 shape\n",
+                "        mano_params=torch.randn(num_frames, 51).to(device),\n",
+                "        \n",
+                "        # Signed Distance Fields\n",
+                "        hand_sdf=torch.randn(num_frames, 64, 64, 64).to(device),\n",
+                "        object_sdf=torch.randn(num_frames, 64, 64, 64).to(device),\n",
+                "        \n",
+                "        # Contact information\n",
+                "        contact_points=torch.randn(num_frames, 10, 3).to(device),\n",
+                "        contact_frames=torch.randint(0, 2, (num_frames, 10)).float().to(device),\n",
+                "        \n",
+                "        # Additional outputs\n",
+                "        hand_vertices=torch.randn(num_frames, 778, 3).to(device),\n",
+                "        object_center=torch.randn(num_frames, 3).to(device)\n",
+                "    )\n",
+                "\n",
+                "# Create example outputs for two videos\n",
+                "video1_outputs = create_example_hoisdf_outputs(100, device)\n",
+                "video2_outputs = create_example_hoisdf_outputs(100, device)\n",
+                "\n",
+                "print(\"HOISDF Output Components:\")\n",
+                "print(f\"  MANO params shape: {video1_outputs.mano_params.shape}\")\n",
+                "print(f\"  Hand SDF shape: {video1_outputs.hand_sdf.shape}\")\n",
+                "print(f\"  Contact points shape: {video1_outputs.contact_points.shape}\")"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "## 3. Generate Transition"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "# Generate transition between two videos\n",
+                "transition_length = 30  # 30 frames for transition\n",
+                "\n",
+                "# Forward pass\n",
+                "with torch.no_grad():\n",
+                "    outputs = model(video1_outputs, video2_outputs, \n",
+                "                   transition_length=transition_length, \n",
+                "                   mode='inference')\n",
+                "\n",
+                "# Extract transition MANO parameters\n",
+                "transition_mano = outputs['transformer']['refined_mano']\n",
+                "print(f\"Generated transition shape: {transition_mano.shape}\")\n",
+                "print(f\"Transition covers {transition_mano.shape[1]} frames\")"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "## 4. Visualize Transition"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "# Visualize MANO parameter trajectories\n",
+                "fig, axes = plt.subplots(2, 2, figsize=(12, 8))\n",
+                "\n",
+                "# Plot translation components\n",
+                "ax = axes[0, 0]\n",
+                "trans_params = transition_mano[0, :, :3].cpu().numpy()\n",
+                "ax.plot(trans_params[:, 0], label='X', color='red')\n",
+                "ax.plot(trans_params[:, 1], label='Y', color='green')\n",
+                "ax.plot(trans_params[:, 2], label='Z', color='blue')\n",
+                "ax.set_title('Hand Translation During Transition')\n",
+                "ax.set_xlabel('Frame')\n",
+                "ax.set_ylabel('Translation (m)')\n",
+                "ax.legend()\n",
+                "ax.grid(True)\n",
+                "\n",
+                "# Plot rotation magnitude\n",
+                "ax = axes[0, 1]\n",
+                "rot_params = transition_mano[0, :, 3:48].cpu().numpy()\n",
+                "rot_magnitude = np.linalg.norm(rot_params, axis=1)\n",
+                "ax.plot(rot_magnitude, color='purple')\n",
+                "ax.set_title('Hand Rotation Magnitude')\n",
+                "ax.set_xlabel('Frame')\n",
+                "ax.set_ylabel('Rotation Magnitude')\n",
+                "ax.grid(True)\n",
+                "\n",
+                "# Plot boundary predictions\n",
+                "ax = axes[1, 0]\n",
+                "boundaries = outputs['transformer']['boundaries'][0, :, 0].cpu().numpy()\n",
+                "ax.plot(boundaries, color='orange')\n",
+                "ax.set_title('Task Boundary Predictions')\n",
+                "ax.set_xlabel('Frame')\n",
+                "ax.set_ylabel('Boundary Probability')\n",
+                "ax.grid(True)\n",
+                "\n",
+                "# Plot transition quality scores\n",
+                "ax = axes[1, 1]\n",
+                "quality = outputs['transformer']['transition_quality'][0, :, 0].cpu().numpy()\n",
+                "ax.plot(quality, color='green')\n",
+                "ax.set_title('Transition Quality Score')\n",
+                "ax.set_xlabel('Frame')\n",
+                "ax.set_ylabel('Quality Score')\n",
+                "ax.grid(True)\n",
+                "\n",
+                "plt.tight_layout()\n",
+                "plt.show()"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "## 5. Training Loop"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "def train_step(model, video1_outputs, video2_outputs, gt_transition, \n",
+                "               criterion, optimizer):\n",
+                "    \"\"\"Single training step\"\"\"\n",
+                "    model.train()\n",
+                "    \n",
+                "    # Forward pass\n",
+                "    outputs = model(video1_outputs, video2_outputs, \n",
+                "                   transition_length=30, mode='train')\n",
+                "    \n",
+                "    # Compute losses\n",
+                "    losses = criterion(outputs, gt_transition, model)\n",
+                "    \n",
+                "    # Backward pass\n",
+                "    optimizer.zero_grad()\n",
+                "    losses['total'].backward()\n",
+                "    torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)\n",
+                "    optimizer.step()\n",
+                "    \n",
+                "    return losses\n",
+                "\n",
+                "# Example training step with dummy ground truth\n",
+                "gt_transition = create_example_hoisdf_outputs(30, device)\n",
+                "\n",
+                "# Run one training step\n",
+                "losses = train_step(model, video1_outputs, video2_outputs, \n",
+                "                   gt_transition, criterion, optimizer)\n",
+                "\n",
+                "print(\"Loss breakdown:\")\n",
+                "for k, v in losses.items():\n",
+                "    if k != 'total' and not k.startswith('diffusion_'):\n",
+                "        print(f\"  {k}: {v.item():.4f}\")\n",
+                "print(f\"\\nTotal loss: {losses['total'].item():.4f}\")"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "## 6. Loading Real HOISDF Outputs\n",
+                "\n",
+                "To use this with real data, you need to load HOISDF outputs from your trained model."
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "def load_hoisdf_outputs(hoisdf_model, video_frames, device):\n",
+                "    \"\"\"Load HOISDF outputs from a trained model\"\"\"\n",
+                "    # This is a placeholder - implement based on your HOISDF model\n",
+                "    # hoisdf_model.eval()\n",
+                "    # with torch.no_grad():\n",
+                "    #     outputs = hoisdf_model(video_frames)\n",
+                "    \n",
+                "    # For now, return dummy outputs\n",
+                "    T = video_frames.shape[1] if video_frames.dim() > 3 else 100\n",
+                "    return create_example_hoisdf_outputs(T, device)\n",
+                "\n",
+                "# Example: Load outputs for your videos\n",
+                "# video1_frames = load_video('path/to/video1.mp4')\n",
+                "# video2_frames = load_video('path/to/video2.mp4')\n",
+                "# \n",
+                "# hoisdf_outputs1 = load_hoisdf_outputs(hoisdf_model, video1_frames, device)\n",
+                "# hoisdf_outputs2 = load_hoisdf_outputs(hoisdf_model, video2_frames, device)"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "## 7. Export Merged Sequence\n",
+                "\n",
+                "Combine the original sequences with the generated transition."
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "def create_merged_sequence(video1_outputs, video2_outputs, transition_mano):\n",
+                "    \"\"\"Create complete merged sequence\"\"\"\n",
+                "    # Take last part of video1, transition, first part of video2\n",
+                "    context_frames = 20\n",
+                "    \n",
+                "    # Extract relevant parts\n",
+                "    video1_end = video1_outputs.mano_params[-context_frames:]\n",
+                "    video2_start = video2_outputs.mano_params[:context_frames]\n",
+                "    \n",
+                "    # Combine into full sequence\n",
+                "    merged_mano = torch.cat([\n",
+                "        video1_outputs.mano_params[:-context_frames],\n",
+                "        transition_mano[0],  # Remove batch dimension\n",
+                "        video2_outputs.mano_params[context_frames:]\n",
+                "    ], dim=0)\n",
+                "    \n",
+                "    return merged_mano\n",
+                "\n",
+                "# Create merged sequence\n",
+                "merged_sequence = create_merged_sequence(video1_outputs, video2_outputs, transition_mano)\n",
+                "print(f\"Merged sequence shape: {merged_sequence.shape}\")\n",
+                "print(f\"Total frames: {merged_sequence.shape[0]}\")\n",
+                "\n",
+                "# Visualize merged sequence\n",
+                "plt.figure(figsize=(12, 4))\n",
+                "plt.plot(merged_sequence[:, 0].cpu().numpy(), label='X translation')\n",
+                "plt.axvline(x=80, color='red', linestyle='--', label='Transition start')\n",
+                "plt.axvline(x=110, color='red', linestyle='--', label='Transition end')\n",
+                "plt.xlabel('Frame')\n",
+                "plt.ylabel('Translation')\n",
+                "plt.title('Merged Sequence with Smooth Transition')\n",
+                "plt.legend()\n",
+                "plt.grid(True)\n",
+                "plt.show()"
+            ]
+        }
+    ],
+    "metadata": {
+        "kernelspec": {
+            "display_name": "Python 3",
+            "language": "python",
+            "name": "python3"
+        },
+        "language_info": {
+            "codemirror_mode": {
+                "name": "ipython",
+                "version": 3
+            },
+            "file_extension": ".py",
+            "mimetype": "text/x-python",
+            "name": "python",
+            "nbconvert_exporter": "python",
+            "pygments_lexer": "ipython3",
+            "version": "3.8.0"
+        }
+    },
+    "nbformat": 4,
+    "nbformat_minor": 4
+}
+
+# Write the notebook
+with open('/home/n231/231nProjectV2/Test_Model/transition_merger.ipynb', 'w') as f:
+    json.dump(notebook, f, indent=2)

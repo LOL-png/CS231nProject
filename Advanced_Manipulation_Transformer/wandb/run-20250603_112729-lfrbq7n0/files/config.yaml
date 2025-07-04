@@ -1,0 +1,146 @@
+_wandb:
+    value:
+        cli_version: 0.19.11
+        m: []
+        python_version: 3.12.9
+        t:
+            "1":
+                - 1
+                - 11
+                - 41
+                - 49
+                - 50
+                - 55
+            "2":
+                - 1
+                - 11
+                - 41
+                - 49
+                - 50
+                - 55
+            "3":
+                - 13
+                - 16
+                - 23
+                - 55
+            "4": 3.12.9
+            "5": 0.19.11
+            "6": 4.36.0
+            "8":
+                - 5
+            "12": 0.19.11
+            "13": linux-x86_64
+checkpoint:
+    value:
+        checkpoint_dir: ${output_dir}/checkpoints
+        resume_from: null
+data:
+    value:
+        augmentation:
+            color_jitter: 0.2
+            joint_noise_std: 0.005
+            rotation_range: 15
+            scale_range:
+                - 0.8
+                - 1.2
+            translation_std: 0.05
+        dexycb_root: ../dex-ycb-toolkit
+        num_workers: 8
+        persistent_workers: true
+        prefetch_factor: 4
+        root_dir: ../dex-ycb-toolkit
+        sequence_length: 1
+        train_split: s0_train
+        val_split: s0_val
+debug:
+    value:
+        debug_final_model: true
+        debug_initial_model: true
+        enabled: false
+        log_gradient_norms: true
+        save_attention_maps: false
+evaluation:
+    value:
+        metrics:
+            - mpjpe
+            - pa_mpjpe
+            - pck_2d
+            - pck_3d
+        pck_thresholds:
+            - 20
+            - 30
+            - 40
+            - 50
+        save_visualizations: true
+experiment_name:
+    value: advanced_manipulation_transformer
+loss:
+    value:
+        diversity_margin: 0.01
+        fingertip_weight: 1.5
+        loss_weights:
+            contact: 0.3
+            diversity: 0.01
+            hand_coarse: 1
+            hand_refined: 1.2
+            kl: 0.001
+            object_position: 1
+            object_rotation: 0.5
+            physics: 0.1
+            reprojection: 0.5
+        object_position_weight: 1
+        per_joint_weighting: true
+model:
+    value:
+        contact_hidden_dim: 512
+        dropout: 0.1
+        freeze_layers: 12
+        hidden_dim: 1024
+        max_objects: 10
+        num_contact_points: 10
+        num_object_classes: 100
+        num_refinement_steps: 2
+        use_attention_fusion: true
+        use_mano_vertices: true
+        use_sigma_reparam: true
+optimizations:
+    value:
+        memory:
+            checkpoint_ratio: 0.5
+            dynamic_batch_sizing: true
+            gradient_checkpointing: true
+            target_memory_usage: 0.9
+        use_flash_attention: true
+        use_fp8: false
+        use_fsdp: false
+        use_memory_optimization: true
+        use_mode_collapse_prevention: true
+output_dir:
+    value: outputs/${experiment_name}
+training:
+    value:
+        T_0: 10
+        T_mult: 2
+        accumulation_steps: 2
+        batch_size: 32
+        ema_decay: 0.999
+        grad_clip: 1
+        learning_rate: 0.001
+        log_freq: 100
+        min_lr: 1e-06
+        mixed_precision: true
+        multi_rate:
+            decoders: 1
+            new_encoders: 0.5
+            pretrained: 0.01
+        num_epochs: 100
+        save_freq: 10
+        scheduler: cosine
+        use_amp: true
+        use_bf16: true
+        use_ema: true
+        use_wandb: true
+        val_freq: 1000
+        weight_decay: 0.01
+wandb_project:
+    value: 231nProject_AMT

@@ -1,0 +1,212 @@
+_wandb:
+    value:
+        cli_version: 0.19.11
+        m: []
+        python_version: 3.12.9
+        t:
+            "1":
+                - 1
+                - 11
+                - 49
+                - 55
+            "2":
+                - 1
+                - 11
+                - 49
+                - 55
+            "3":
+                - 2
+                - 14
+                - 23
+                - 55
+            "4": 3.12.9
+            "5": 0.19.11
+            "6": 4.36.0
+            "8":
+                - 5
+            "12": 0.19.11
+            "13": linux-x86_64
+aug_color_jitter:
+    value: 0.22595571064153624
+aug_joint_noise_std:
+    value: 0.0026018299893415843
+aug_rotation_range:
+    value: 19.9976197109249
+aug_scale_max:
+    value: 1.2849339630860084
+aug_scale_min:
+    value: 0.7439897389639265
+aug_translation_std:
+    value: 0.0333045329766287
+batch_size:
+    value: 16
+checkpoint:
+    value:
+        checkpoint_dir: ${output_dir}/checkpoints
+        resume_from: null
+checkpoint_ratio:
+    value: 0.33360808435802924
+contact_hidden_dim:
+    value: 256
+data:
+    value:
+        augmentation:
+            color_jitter: 0.22595571064153624
+            joint_noise_std: 0.0026018299893415843
+            rotation_range: 19.9976197109249
+            scale_range:
+                - 0.7439897389639265
+                - 1.2849339630860084
+            translation_std: 0.0333045329766287
+        dexycb_root: ../dex-ycb-toolkit
+        num_workers: 8
+        persistent_workers: true
+        prefetch_factor: 4
+        root_dir: ../dex-ycb-toolkit
+        sequence_length: 1
+        train_split: s0_train
+        val_split: s0_val
+debug:
+    value:
+        debug_final_model: true
+        debug_initial_model: true
+        enabled: false
+        log_gradient_norms: true
+        save_attention_maps: false
+dropout:
+    value: 0.2
+ema_decay:
+    value: 0.9906513129690326
+evaluation:
+    value:
+        metrics:
+            - mpjpe
+            - pa_mpjpe
+            - pck_2d
+            - pck_3d
+        pck_thresholds:
+            - 20
+            - 30
+            - 40
+            - 50
+        save_visualizations: true
+experiment_name:
+    value: sweep_4z92viw3_20250603_230859
+freeze_layers:
+    value: 12
+grad_clip:
+    value: 1.7330664734768169
+gradient_checkpointing:
+    value: true
+hidden_dim:
+    value: 1024
+learning_rate:
+    value: 4.906078794924057e-05
+loss:
+    value:
+        diversity_margin: 0.01
+        fingertip_weight: 1.5
+        loss_weights:
+            contact: 0.25955014636201695
+            diversity: 0.011605128497504828
+            hand_coarse: 1.4528036179308337
+            hand_refined: 2.342930180160365
+            kl: 0.0010217327128126156
+            object_position: 1.275037106176499
+            object_rotation: 0.8706630237232387
+            physics: 0.060461458107602825
+            reprojection: 0.8778518834196645
+        object_position_weight: 1
+        per_joint_weighting: true
+loss_weight_contact:
+    value: 0.25955014636201695
+loss_weight_diversity:
+    value: 0.011605128497504828
+loss_weight_hand_coarse:
+    value: 1.4528036179308337
+loss_weight_hand_refined:
+    value: 2.342930180160365
+loss_weight_kl:
+    value: 0.0010217327128126156
+loss_weight_object_position:
+    value: 1.275037106176499
+loss_weight_object_rotation:
+    value: 0.8706630237232387
+loss_weight_physics:
+    value: 0.060461458107602825
+loss_weight_reprojection:
+    value: 0.8778518834196645
+lr_mult_new_encoders:
+    value: 0.6816301751764958
+lr_mult_pretrained:
+    value: 0.003847037150758887
+model:
+    value:
+        contact_hidden_dim: 256
+        dropout: 0.2
+        freeze_layers: 12
+        hidden_dim: 1024
+        max_objects: 10
+        num_contact_points: 10
+        num_object_classes: 100
+        num_refinement_steps: 3
+        use_attention_fusion: true
+        use_mano_vertices: true
+        use_sigma_reparam: true
+num_refinement_steps:
+    value: 3
+optimizations:
+    value:
+        memory:
+            checkpoint_ratio: 0.33360808435802924
+            dynamic_batch_sizing: true
+            gradient_checkpointing: true
+            target_memory_usage: 0.9
+        use_flash_attention: true
+        use_fp8: false
+        use_fsdp: false
+        use_memory_optimization: true
+        use_mode_collapse_prevention: true
+output_dir:
+    value: outputs/sweeps/4z92viw3
+scheduler_T_0:
+    value: 20
+scheduler_min_lr:
+    value: 5.422815867087408e-06
+training:
+    value:
+        T_0: 20
+        T_mult: 2
+        accumulation_steps: 2
+        batch_size: 16
+        ema_decay: 0.9906513129690326
+        grad_clip: 1.7330664734768169
+        learning_rate: 4.906078794924057e-05
+        log_freq: 100
+        min_lr: 5.422815867087408e-06
+        mixed_precision: true
+        multi_rate:
+            decoders: 1
+            new_encoders: 0.6816301751764958
+            pretrained: 0.003847037150758887
+        num_epochs: 100
+        save_freq: 10
+        scheduler: cosine
+        use_amp: true
+        use_bf16: true
+        use_ema: true
+        use_wandb: true
+        val_freq: 1000
+        weight_decay: 0.002230810262369731
+use_amp:
+    value: true
+use_attention_fusion:
+    value: true
+use_bf16:
+    value: true
+use_sigma_reparam:
+    value: true
+wandb_project:
+    value: 231nProject_AMT
+weight_decay:
+    value: 0.002230810262369731

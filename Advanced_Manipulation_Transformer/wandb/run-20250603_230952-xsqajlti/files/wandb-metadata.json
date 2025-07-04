@@ -1,0 +1,48 @@
+{
+  "os": "Linux-5.15.0-136-generic-x86_64-with-glibc2.35",
+  "python": "CPython 3.12.9",
+  "startedAt": "2025-06-03T23:09:52.629212Z",
+  "args": [
+    "--project",
+    "advanced-manipulation-transformer",
+    "--count",
+    "50"
+  ],
+  "program": "/home/n231/231nProjectV2/Advanced_Manipulation_Transformer/run_sweep.py",
+  "codePath": "Advanced_Manipulation_Transformer/run_sweep.py",
+  "git": {
+    "remote": "git@github.com:bryandong24/231nProjectV2.git",
+    "commit": "1eb780232fe22d02b85516064a28281adfa41759"
+  },
+  "email": "bryandong24@gmail.com",
+  "root": "/home/n231/231nProjectV2/Advanced_Manipulation_Transformer",
+  "host": "computeinstance-u00ery3nq3470nzkzn",
+  "executable": "/home/n231/miniconda3/envs/env2.0/bin/python",
+  "codePathLocal": "run_sweep.py",
+  "cpu_count": 8,
+  "cpu_count_logical": 16,
+  "gpu": "NVIDIA H200",
+  "gpu_count": 1,
+  "disk": {
+    "/": {
+      "total": "1331823542272",
+      "used": "927334666240"
+    }
+  },
+  "memory": {
+    "total": "211067150336"
+  },
+  "cpu": {
+    "count": 8,
+    "countLogical": 16
+  },
+  "gpu_nvidia": [
+    {
+      "name": "NVIDIA H200",
+      "memoryTotal": "150754820096",
+      "cudaCores": 16896,
+      "architecture": "Hopper"
+    }
+  ],
+  "cudaVersion": "12.4"
+}

@@ -1,0 +1,42 @@
+wandb_version: 1
+
+aug_color_jitter:
+  value: 0.2638112686691605
+aug_joint_noise_std:
+  value: 0.007238275406785554
+aug_rotation_range:
+  value: 8.278427654568652
+aug_scale_max:
+  value: 1.1183825617501586
+aug_scale_min:
+  value: 0.7249008715183684
+aug_translation_std:
+  value: 0.03700274930751707
+batch_size:
+  value: 32
+diversity_margin:
+  value: 0.017392291892585433
+dropout:
+  value: 0.2
+fingertip_weight:
+  value: 1.255079489563434
+loss_weight_contact:
+  value: 0.3533773535587258
+loss_weight_diversity:
+  value: 0.01757853986681419
+loss_weight_hand_coarse:
+  value: 0.9076522081995224
+loss_weight_hand_refined:
+  value: 1.1789599094312615
+loss_weight_object_position:
+  value: 0.9767997624569592
+loss_weight_object_rotation:
+  value: 0.6618190385761621
+loss_weight_physics:
+  value: 0.06209158960194515
+loss_weight_reprojection:
+  value: 0.5816031732595934
+per_joint_weighting:
+  value: true
+scheduler_type:
+  value: exponential

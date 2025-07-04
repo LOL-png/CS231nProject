@@ -1,0 +1,69 @@
+_wandb:
+    value:
+        cli_version: 0.19.11
+        m: []
+        python_version: 3.12.9
+        t:
+            "1":
+                - 1
+                - 11
+                - 49
+                - 55
+            "2":
+                - 1
+                - 11
+                - 49
+                - 55
+            "3":
+                - 2
+                - 14
+                - 23
+                - 55
+            "4": 3.12.9
+            "5": 0.19.11
+            "6": 4.36.0
+            "8":
+                - 1
+                - 5
+            "12": 0.19.11
+            "13": linux-x86_64
+aug_color_jitter:
+    value: 0.1877549773583052
+aug_joint_noise_std:
+    value: 0.004255004055472966
+aug_rotation_range:
+    value: 12.726557831294022
+aug_scale_max:
+    value: 1.2915200080096316
+aug_scale_min:
+    value: 0.7692802696954715
+aug_translation_std:
+    value: 0.04761983155352275
+batch_size:
+    value: 128
+diversity_margin:
+    value: 0.01371942007734536
+dropout:
+    value: 0.1
+fingertip_weight:
+    value: 1.349628756578812
+loss_weight_contact:
+    value: 0.4974510904525554
+loss_weight_diversity:
+    value: 0.012670324760531908
+loss_weight_hand_coarse:
+    value: 0.9276159673198444
+loss_weight_hand_refined:
+    value: 1.4288977652973198
+loss_weight_object_position:
+    value: 1.1883552021513903
+loss_weight_object_rotation:
+    value: 0.45100320938167265
+loss_weight_physics:
+    value: 0.1343961967346039
+loss_weight_reprojection:
+    value: 0.55091760030526
+per_joint_weighting:
+    value: true
+scheduler_type:
+    value: cosine_warmup
