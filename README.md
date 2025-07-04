@@ -57,7 +57,7 @@ Our improved architecture addresses the fundamental issues:
 - Base: DINOv2-large (1.1B parameters, frozen early layers)
 - Total: 516.1M parameters (362.9M trainable)
 - Input: 224×224 RGB → Output: 3D poses + contacts
-- Performance: 150mm MPJPE (50% improvement)
+- Performance: ~150mm MPJPE (50% improvement)
 
 ## External Dependencies
 
